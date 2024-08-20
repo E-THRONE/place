@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設置場所を考えよう</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #container {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            max-width: 600px;
+            width: 90%;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #e0e0e0;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+        }
+        button {
+            background: #333;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background: #444;
+            transform: scale(1.05);
+        }
+        .feedback {
+            color: #ff6347;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>設置場所を考えよう</h1>
+        <div id="question-container" class="question"></div>
+        <div id="answers-container" class="button-container"></div>
+        <div id="feedback" class="feedback"></div>
+        <button id="next-button" onclick="nextQuestion()" style="display:none;">次の問題</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                "question": "図書館内に情報掲示板を設置する場合、最も良い位置はどこでしょうか？その理由も説明してみましょう。",
+                "options": [
+                    { "text": "図書館の入口付近", "correct": true },
+                    { "text": "図書館の奥の静かなコーナー", "correct": false },
+                    { "text": "図書館のカフェの隣", "correct": false },
+                    { "text": "図書館の階段の踊り場", "correct": false }
+                ],
+                "explanation": "最も良い位置は『図書館の入口付近』だと考えられます。利用者が図書館に入った際に最初に目に留まりやすく、多くの人が情報を確認することができるためです。"
+            },
+            {
+                "question": "小学校の体育館に給水器を設置する場合、最も良い位置はどこでしょうか？その理由も説明してみましょう。",
+                "options": [
+                    { "text": "体育館の隅の壁沿い", "correct": true },
+                    { "text": "体育館の入り口付近", "correct": false },
+                    { "text": "体育館の中央", "correct": false },
+                    { "text": "体育館の外の中庭", "correct": false }
+                ],
+                "explanation": "最も良い位置は『体育館の隅の壁沿い』だと考えられます。運動中に給水が必要な際、邪魔にならずにすぐにアクセスできる場所だからです。"
+            },
+            {
+                "question": "小さな書店に新刊コーナーを設置する場合、最も良い位置はどこでしょうか？その理由も説明してみましょう。",
+                "options": [
+                    { "text": "店の入口すぐの場所", "correct": true },
+                    { "text": "店の奥の静かな場所", "correct": false },
+                    { "text": "店のレジの横", "correct": false },
+                    { "text": "店の2階の隅", "correct": false }
+                ],
+                "explanation": "最も良い位置は『店の入口すぐの場所』だと考えられます。来店したお客さんが新刊をチェックすることができるためです。"
+            },
+            {
+                "question": "大学キャンパスに案内板を設置する場合、最も良い位置はどこでしょうか？その理由も説明してみましょう。",
+                "options": [
+                    { "text": "キャンパスの正門付近", "correct": true },
+                    { "text": "キャンパス内のカフェの隣", "correct": false },
+                    { "text": "キャンパスの駐車場の奥", "correct": false },
+                    { "text": "キャンパスの図書館の中", "correct": false }
+                ],
+                "explanation": "最も良い位置は『キャンパスの正門付近』だと考えられます。初めて訪れた人やキャンパスに慣れていない人が最初に案内板を見て目的地を確認できるためです。"
+            },
+     {
+    "question": "病院の待合室にテレビを設置する場合、最も良い位置はどこでしょうか？その理由も説明してみましょう。",
+    "options": [
+        { "text": "待合室のソファの正面の壁", "correct": true },
+        { "text": "待合室の入口の横", "correct": false },
+        { "text": "待合室の隅の目立たない場所", "correct": false },
+        { "text": "受付カウンターの後ろの壁", "correct": false }
+    ],
+    "explanation": "最も良い位置は『待合室のソファの正面の壁』だと考えられます。待ち時間を過ごす患者さんがリラックスしながら情報や娯楽を得られるように、視線の先にテレビを配置することで、退屈さを軽減できるためです。"
+}
+
+
+        ];
+
+        let currentQuestionIndex = 0;
+        let selectedQuestions = [];
+
+        function getRandomQuestions() {
+            const shuffled = questions.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, questions.length);
+        }
+
+        function shuffleOptions(options) {
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            return options;
+        }
+
+        function showQuestion(questionIndex) {
+            const question = selectedQuestions[questionIndex];
+            const questionContainer = document.getElementById('question-container');
+            const answersContainer = document.getElementById('answers-container');
+            const feedbackContainer = document.getElementById('feedback');
+
+            questionContainer.textContent = question.question;
+            answersContainer.innerHTML = '';
+
+            const shuffledOptions = shuffleOptions(question.options);
+
+            shuffledOptions.forEach((option) => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                button.onclick = () => checkAnswer(option.correct, question.explanation);
+                answersContainer.appendChild(button);
+            });
+
+            feedbackContainer.textContent = '';
+            document.getElementById('next-button').style.display = 'none';
+        }
+
+        function checkAnswer(isCorrect, explanation) {
+            const feedbackContainer = document.getElementById('feedback');
+            if (isCorrect) {
+                feedbackContainer.textContent = `そうですね！ ${explanation}`;
+            } else {
+                feedbackContainer.textContent = `それも悪くないです！解説: ${explanation}`;
+            }
+            document.getElementById('next-button').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < selectedQuestions.length) {
+                showQuestion(currentQuestionIndex);
+            } else {
+                document.getElementById('question-container').textContent = 'クイズは終了しました。お疲れ様でした！';
+                document.getElementById('answers-container').innerHTML = '';
+                document.getElementById('feedback').textContent = '';
+                document.getElementById('next-button').style.display = 'none';
+            }
+        }
+
+        window.onload = () => {
+            selectedQuestions = getRandomQuestions();
+            showQuestion(currentQuestionIndex);
+        }
+    </script>
+</body>
+</html>
